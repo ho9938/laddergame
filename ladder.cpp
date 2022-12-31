@@ -48,15 +48,17 @@ void Ladder::printLine(int bridgeNum)
     if (bridgeNum != -1)
         bridgeIter = bridgeList.at(bridgeNum).begin();
 
+    char curChar = ' ';
     for (nameIter = entryList.begin(); nameIter != entryList.end(); nameIter++)
     {
-        char curChar;
+        cout << string((*nameIter).length() / 2, curChar);
+
         if (bridgeNum != -1 && *(bridgeIter++))
             curChar = '-';
         else
             curChar = ' ';
 
-        cout << '|' << string((*nameIter).length(), curChar);
+        cout << '|' << string(((*nameIter).length() + 1) / 2, curChar);
     }
 
     cout << endl;
@@ -82,7 +84,8 @@ void Ladder::printLadder()
     targetIter = targetList.begin();
     for (nameIter = entryList.begin(); nameIter != entryList.end(); nameIter++)
     {
+        cout << string((*nameIter).length() / 2, ' ');
         cout << (*(targetIter++) ? 'X' : 'O');
-        cout << string((*nameIter).length(), ' ');
+        cout << string(((*nameIter).length() + 1) / 2, ' ');
     }
 }
