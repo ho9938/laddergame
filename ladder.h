@@ -10,10 +10,19 @@ class Ladder
     vector<string> entryList;
     vector<bool> targetList;
     vector<vector<bool>> bridgeList;
+    string command;
 
 public:
-    Ladder(int entryNum = 3, int targetNum = 1, int ladderLen = 5);
+    Ladder();
     void setEntryName(int index, string name);
     void printLine(int bridgeNum);
     void printLadder();
+    void addEntry();
+    void changeEntry();
+    void changeTargetNum();
+    void changeLadderLen();
+    void shuffleLadder();
+    void rideLadder();
+    void showResult();
+    void invalidCommand();
 };
