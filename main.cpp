@@ -19,7 +19,7 @@ int main()
             ladder.changeEntry();
             break;
         case '3':
-            ladder.changeTargetNum();
+            ladder.changeLoserNum();
             break;
         case '4':
             ladder.changeLadderLen();

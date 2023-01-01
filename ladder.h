@@ -7,14 +7,14 @@ using namespace std;
 class Ladder
 {
     int entryNum;
-    int targetNum;
+    int loserNum;
     int ladderLen;
 
     string status;
     string command;
 
     string entryList[MAX_ENTRY];
-    bool targetList[MAX_ENTRY];
+    bool loserList[MAX_ENTRY];
     int bridgeList[MAX_LENGTH + 2];
     string ladderMap[MAX_LENGTH + 2][MAX_ENTRY];
 
@@ -23,7 +23,7 @@ public:
     void printLadder();
     void addEntry();
     void changeEntry();
-    void changeTargetNum();
+    void changeLoserNum();
     void changeLadderLen();
     void drawLadderMap();
     void shuffleLadder();

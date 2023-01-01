@@ -5,7 +5,7 @@ using namespace std;
 Ladder::Ladder()
 {
     this->entryNum = 3;
-    this->targetNum = 1;
+    this->loserNum = 1;
     this->ladderLen = 5;
 
     setDefaultCommand();
@@ -38,7 +38,7 @@ void Ladder::printLadder()
     for (int i = 0; i < entryNum; i++)
     {
         cout << string(entryList[i].length() / 2, ' ');
-        cout << (targetList[i] ? 'X' : 'O');
+        cout << (loserList[i] ? 'X' : 'O');
         cout << string((entryList[i].length() + 1) / 2, ' ');
     }
     cout << endl;
@@ -48,7 +48,7 @@ void Ladder::printLadder()
     cout << "0. exit" << endl;
     cout << "1. add entry" << endl;
     cout << "2. change entry" << endl;
-    cout << "3. change number of target" << endl;
+    cout << "3. change number of loser" << endl;
     cout << "4. change length of ladder" << endl;
     cout << "5. shuffle ladder again" << endl;
     cout << "6. ride on the ladder" << endl;
@@ -108,10 +108,10 @@ void Ladder::changeEntry()
     setDefaultCommand();
 }
 
-void Ladder::changeTargetNum()
+void Ladder::changeLoserNum()
 {
-    status = "change number of target in progress...";
-    command = "type how many targets do you want";
+    status = "change number of loser in progress...";
+    command = "type how many losers do you want";
     printLadder();
 
     int num;
@@ -119,16 +119,16 @@ void Ladder::changeTargetNum()
 
     if (num >= entryNum)
     {
-        status = "number of target must be smaller than number of entries";
+        status = "number of loser is out of range";
         setDefaultCommand();
         return;
     }
 
     // else
-    targetNum = num;
+    loserNum = num;
     shuffleLadder();
 
-    status = "change number of target complete";
+    status = "change number of loser complete";
     setDefaultCommand();
 }
 
@@ -181,15 +181,15 @@ void Ladder::shuffleLadder()
     bridgeList[ladderLen + 1] = -1;
 
     for (int i = 0; i < entryNum; i++)
-        targetList[i] = false;
+        loserList[i] = false;
 
     int cnt = 0;
-    while (cnt < targetNum)
+    while (cnt < loserNum)
     {
-        int curTarget = rand() % entryNum;
-        if (!targetList[curTarget])
+        int curLoser = rand() % entryNum;
+        if (!loserList[curLoser])
         {
-            targetList[curTarget] = true;
+            loserList[curLoser] = true;
             cnt++;
         }
     }
@@ -242,10 +242,19 @@ bool Ladder::rideLadder(int index)
         }
     }
 
-    return targetList[curBridge];
+    return loserList[curBridge];
 }
 
-void Ladder::showResult() {}
+void Ladder::showResult()
+{
+    status = (loserNum > 1) ? "losers are " : "loser is ";
+
+    for (int i = 0; i < entryNum; i++)
+        if (rideLadder(i))
+            status += entryList[i] + ", ";
+
+    status = status.substr(0, status.rfind(','));
+}
 
 void Ladder::terminate()
 {
@@ -272,9 +281,9 @@ void Ladder::addDebugStatus()
         status += to_string(i) + ":" + entryList[i] + " ";
     status += "\n";
 
-    status += "targetList: ";
+    status += "loserList: ";
     for (int i = 0; i < entryNum; i++)
-        status += to_string(i) + ":" + to_string(targetList[i]) + " ";
+        status += to_string(i) + ":" + to_string(loserList[i]) + " ";
     status += "\n";
 
     status += "bridgeList: ";
