@@ -117,8 +117,54 @@ void Ladder::changeEntry()
     status = "change entry complete";
     setDefaultCommand();
 }
-void Ladder::changeTargetNum() {}
-void Ladder::changeLadderLen() {}
+
+void Ladder::changeTargetNum()
+{
+    status = "change number of target in progress...";
+    command = "type how many targets do you want";
+    printLadder();
+
+    int num;
+    cin >> num;
+
+    if (num >= entryNum)
+    {
+        status = "number of target must be smaller than number of entries";
+        setDefaultCommand();
+        return;
+    }
+
+    // else
+    targetNum = num;
+    shuffleLadder();
+
+    status = "change number of target complete";
+    setDefaultCommand();
+}
+
+void Ladder::changeLadderLen()
+{
+    status = "change length of ladder in progress...";
+    command = "type the length of ladder you want";
+    printLadder();
+
+    int len;
+    cin >> len;
+
+    if (len > MAX_LENGTH)
+    {
+        status = "length of ladder is out of range";
+        setDefaultCommand();
+        return;
+    }
+
+    // else
+    ladderLen = len;
+    shuffleLadder();
+
+    status = "change length of ladder complete";
+    setDefaultCommand();
+}
 
 void Ladder::shuffleLadder()
 {
