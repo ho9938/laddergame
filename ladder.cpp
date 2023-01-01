@@ -18,12 +18,15 @@ Ladder::Ladder()
 
 void Ladder::printLine(int bridgeNum)
 {
-    char curChar = ' ';
     for (int i = 0; i < entryNum; i++)
     {
-        cout << string(entryList[i].length() / 2, curChar);
-        curChar = (bridgeNum != -1 && bridgeList[bridgeNum] == i) ? '-' : ' ';
-        cout << '|' << string((entryList[i].length() + 1) / 2, curChar);
+        if (bridgeNum == -1)
+        {
+            cout << string(entryList[i].length() / 2, ' ');
+            cout << '|' << string((entryList[i].length() + 1) / 2, ' ');
+        }
+        else
+            cout << ladderMap[bridgeNum][i];
     }
     cout << endl;
 }
@@ -166,12 +169,29 @@ void Ladder::changeLadderLen()
     setDefaultCommand();
 }
 
+void Ladder::drawLadderMap()
+{
+    for (int i = 0; i < ladderLen; i++)
+    {
+        char curChar = ' ';
+        ladderMap[i][0] = "";
+
+        for (int j = 0; j < entryNum; j++)
+        {
+            ladderMap[i][j] += string(entryList[j].length() / 2, curChar) + "|";
+
+            curChar = (bridgeList[i] == j + 1) ? '-' : ' ';
+            ladderMap[i][j + 1] = string((entryList[j].length() + 1) / 2, curChar);
+        }
+    }
+}
+
 void Ladder::shuffleLadder()
 {
     srand(time(0));
 
     for (int i = 0; i < ladderLen; i++)
-        bridgeList[i] = rand() % (entryNum - 1);
+        bridgeList[i] = rand() % (entryNum - 1) + 1;
 
     for (int i = 0; i < entryNum; i++)
         targetList[i] = false;
@@ -187,10 +207,16 @@ void Ladder::shuffleLadder()
         }
     }
 
+    drawLadderMap();
     status = "shuffle ladder complete";
 }
 
 void Ladder::rideLadder() {}
+
+void Ladder::rideLadder(int index)
+{
+}
+
 void Ladder::showResult() {}
 
 void Ladder::terminate()

@@ -16,6 +16,7 @@ class Ladder
     string entryList[MAX_ENTRY];
     bool targetList[MAX_ENTRY];
     int bridgeList[MAX_LENGTH];
+    string ladderMap[MAX_LENGTH][MAX_ENTRY];
 
 public:
     Ladder();
@@ -25,8 +26,10 @@ public:
     void changeEntry();
     void changeTargetNum();
     void changeLadderLen();
+    void drawLadderMap();
     void shuffleLadder();
     void rideLadder();
+    void rideLadder(int index);
     void showResult();
     void terminate();
     void invalidCommand();
