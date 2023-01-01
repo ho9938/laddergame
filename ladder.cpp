@@ -16,21 +16,6 @@ Ladder::Ladder()
     shuffleLadder();
 }
 
-void Ladder::printLine(int bridgeNum)
-{
-    for (int i = 0; i < entryNum; i++)
-    {
-        if (bridgeNum == -1)
-        {
-            cout << string(entryList[i].length() / 2, ' ');
-            cout << '|' << string((entryList[i].length() + 1) / 2, ' ');
-        }
-        else
-            cout << ladderMap[bridgeNum][i];
-    }
-    cout << endl;
-}
-
 void Ladder::printLadder()
 {
     system("clear");
@@ -43,10 +28,12 @@ void Ladder::printLadder()
         cout << entryList[i] << ' ';
     cout << endl;
 
-    printLine(-1);
-    for (int i = 0; i < ladderLen; i++)
-        printLine(i);
-    printLine(-1);
+    for (int i = 0; i <= ladderLen + 1; i++)
+    {
+        for (int j = 0; j < entryNum; j++)
+            cout << ladderMap[i][j];
+        cout << endl;
+    }
 
     for (int i = 0; i < entryNum; i++)
     {
@@ -171,17 +158,15 @@ void Ladder::changeLadderLen()
 
 void Ladder::drawLadderMap()
 {
-    for (int i = 0; i < ladderLen; i++)
+    for (int i = 0; i <= ladderLen + 1; i++)
     {
-        char curChar = ' ';
-        ladderMap[i][0] = "";
+        ladderMap[i][0] = string(entryList[0].length() / 2, ' ') + "|";
 
-        for (int j = 0; j < entryNum; j++)
+        for (int j = 1; j < entryNum; j++)
         {
+            char curChar = (bridgeList[i] == j) ? '-' : ' ';
+            ladderMap[i][j] = string((entryList[j].length() + 1) / 2, curChar);
             ladderMap[i][j] += string(entryList[j].length() / 2, curChar) + "|";
-
-            curChar = (bridgeList[i] == j + 1) ? '-' : ' ';
-            ladderMap[i][j + 1] = string((entryList[j].length() + 1) / 2, curChar);
         }
     }
 }
@@ -190,8 +175,10 @@ void Ladder::shuffleLadder()
 {
     srand(time(0));
 
-    for (int i = 0; i < ladderLen; i++)
+    bridgeList[0] = -1;
+    for (int i = 1; i <= ladderLen; i++)
         bridgeList[i] = rand() % (entryNum - 1) + 1;
+    bridgeList[ladderLen + 1] = -1;
 
     for (int i = 0; i < entryNum; i++)
         targetList[i] = false;
@@ -211,10 +198,51 @@ void Ladder::shuffleLadder()
     status = "shuffle ladder complete";
 }
 
-void Ladder::rideLadder() {}
-
-void Ladder::rideLadder(int index)
+void Ladder::rideLadder()
 {
+    status = "ride on the ladder in progress...";
+    command = "type the index of the entry you want to ride";
+    printLadder();
+
+    int index;
+    cin >> index;
+
+    if (index >= entryNum)
+    {
+        status = "index is out of range";
+        setDefaultCommand();
+        return;
+    }
+
+    // else
+    bool result = rideLadder(index);
+
+    status += entryList[index] + " is ";
+    if (result)
+        status += "loser";
+    else
+        status += "winner";
+
+    setDefaultCommand();
+}
+
+bool Ladder::rideLadder(int index)
+{
+    int curBridge = index;
+
+    for (int i = 0; i <= ladderLen + 1; i++)
+    {
+        if (bridgeList[i] == curBridge)
+        {
+            curBridge -= 1;
+        }
+        else if (bridgeList[i] == curBridge + 1)
+        {
+            curBridge += 1;
+        }
+    }
+
+    return targetList[curBridge];
 }
 
 void Ladder::showResult() {}
@@ -232,4 +260,27 @@ void Ladder::invalidCommand()
 void Ladder::setDefaultCommand()
 {
     command = "what command do you want to execute?";
+}
+
+void Ladder::addDebugStatus()
+{
+    status += "\n";
+    status += "---------------------------\n";
+
+    status += "entryList: ";
+    for (int i = 0; i < entryNum; i++)
+        status += to_string(i) + ":" + entryList[i] + " ";
+    status += "\n";
+
+    status += "targetList: ";
+    for (int i = 0; i < entryNum; i++)
+        status += to_string(i) + ":" + to_string(targetList[i]) + " ";
+    status += "\n";
+
+    status += "bridgeList: ";
+    for (int i = 0; i <= ladderLen + 1; i++)
+        status += to_string(i) + ":" + to_string(bridgeList[i]) + " ";
+    status += "\n";
+
+    status += "---------------------------\n";
 }
