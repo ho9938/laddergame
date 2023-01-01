@@ -1,20 +1,24 @@
 #include <iostream>
-#include <vector>
 using namespace std;
+
+#define MAX_ENTRY 10
+#define MAX_LENGTH 30
 
 class Ladder
 {
     int entryNum;
     int targetNum;
     int ladderLen;
-    vector<string> entryList;
-    vector<bool> targetList;
-    vector<vector<bool>> bridgeList;
+
+    string status;
     string command;
+
+    string entryList[MAX_ENTRY];
+    bool targetList[MAX_ENTRY];
+    int bridgeList[MAX_LENGTH];
 
 public:
     Ladder();
-    void setEntryName(int index, string name);
     void printLine(int bridgeNum);
     void printLadder();
     void addEntry();
@@ -24,5 +28,7 @@ public:
     void shuffleLadder();
     void rideLadder();
     void showResult();
+    void terminate();
     void invalidCommand();
+    void setDefaultCommand();
 };

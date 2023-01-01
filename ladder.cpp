@@ -1,91 +1,163 @@
 #include <iostream>
-#include <vector>
-#include <algorithm>
-#include <random>
 #include "ladder.h"
 using namespace std;
 
-Ladder::Ladder(int entryNum, int targetNum, int ladderLen)
+Ladder::Ladder()
 {
-    this->entryNum = entryNum;
-    this->targetNum = targetNum;
-    this->ladderLen = ladderLen;
+    this->entryNum = 3;
+    this->targetNum = 1;
+    this->ladderLen = 5;
+
+    setDefaultCommand();
 
     for (int i = 0; i < entryNum; i++)
-        entryList.push_back("entry" + to_string(i));
+        entryList[i] = "entry" + to_string(i);
 
-    srand(time(0));
-    for (int i = 0; i < ladderLen; i++)
-    {
-        vector<bool> curColumn;
-        for (int j = 0; j < entryNum - 1; j++)
-            curColumn.push_back(rand() % 2);
-        curColumn.push_back(false);
-        bridgeList.push_back(curColumn);
-    }
-
-    for (int i = 0; i < entryNum - targetNum; i++)
-        targetList.push_back(false);
-    for (int i = 0; i < targetNum; i++)
-        targetList.push_back(true);
-    auto rng = default_random_engine{};
-    random_shuffle(targetList.begin(), targetList.end());
-};
-
-void Ladder::setEntryName(int index, string name)
-{
-    if (index >= entryNum)
-        return;
-
-    entryList.at(index) = name;
+    shuffleLadder();
 }
 
 void Ladder::printLine(int bridgeNum)
 {
-    vector<string>::iterator nameIter;
-    vector<bool>::iterator bridgeIter;
-
-    if (bridgeNum != -1)
-        bridgeIter = bridgeList.at(bridgeNum).begin();
-
     char curChar = ' ';
-    for (nameIter = entryList.begin(); nameIter != entryList.end(); nameIter++)
+    for (int i = 0; i < entryNum; i++)
     {
-        cout << string((*nameIter).length() / 2, curChar);
-
-        if (bridgeNum != -1 && *(bridgeIter++))
-            curChar = '-';
-        else
-            curChar = ' ';
-
-        cout << '|' << string(((*nameIter).length() + 1) / 2, curChar);
+        cout << string(entryList[i].length() / 2, curChar);
+        curChar = (bridgeNum != -1 && bridgeList[bridgeNum] == i) ? '-' : ' ';
+        cout << '|' << string((entryList[i].length() + 1) / 2, curChar);
     }
-
     cout << endl;
 }
 
 void Ladder::printLadder()
 {
-    vector<string>::iterator nameIter;
-    vector<int>::iterator widthIter;
-    vector<bool>::iterator targetIter;
+    system("clear");
 
-    for (nameIter = entryList.begin(); nameIter != entryList.end(); nameIter++)
-        cout << *nameIter << ' ';
+    cout << "laddergame v1" << endl;
+    cout << "made by Yoon Changho ho9938@unist.ac.kr" << endl;
     cout << endl;
 
+    for (int i = 0; i < entryNum; i++)
+        cout << entryList[i] << ' ';
+    cout << endl;
+
+    printLine(-1);
     for (int i = 0; i < ladderLen; i++)
-    {
-        printLine(-1);
         printLine(i);
-    }
     printLine(-1);
 
-    targetIter = targetList.begin();
-    for (nameIter = entryList.begin(); nameIter != entryList.end(); nameIter++)
+    for (int i = 0; i < entryNum; i++)
     {
-        cout << string((*nameIter).length() / 2, ' ');
-        cout << (*(targetIter++) ? 'X' : 'O');
-        cout << string(((*nameIter).length() + 1) / 2, ' ');
+        cout << string(entryList[i].length() / 2, ' ');
+        cout << (targetList[i] ? 'X' : 'O');
+        cout << string((entryList[i].length() + 1) / 2, ' ');
     }
+    cout << endl;
+
+    cout << endl;
+    cout << status << endl;
+    cout << "0. exit" << endl;
+    cout << "1. add entry" << endl;
+    cout << "2. change entry" << endl;
+    cout << "3. change number of target" << endl;
+    cout << "4. change length of ladder" << endl;
+    cout << "5. shuffle ladder again" << endl;
+    cout << "6. ride on the ladder" << endl;
+    cout << "7. show the result" << endl;
+
+    cout << endl;
+    cout << command << " : ";
+}
+
+void Ladder::addEntry()
+{
+    status = "add entry in progress...";
+
+    if (entryNum == MAX_ENTRY)
+    {
+        status = "entry number is maximum already";
+        setDefaultCommand();
+        return;
+    }
+
+    // else
+    entryList[entryNum] = "entry" + to_string(entryNum);
+    entryNum += 1;
+
+    shuffleLadder();
+
+    setDefaultCommand();
+    status = "add entry complete";
+}
+
+void Ladder::changeEntry()
+{
+    status = "change entry in progress...";
+    command = "type the index of the entry you want to change";
+    printLadder();
+
+    int index;
+    cin >> index;
+
+    if (index >= entryNum)
+    {
+        status = "index is out of range";
+        setDefaultCommand();
+        return;
+    }
+
+    // else
+    command = "type the new name to change to";
+    printLadder();
+
+    string name;
+    cin >> name;
+
+    entryList[index] = name;
+
+    status = "change entry complete";
+    setDefaultCommand();
+}
+void Ladder::changeTargetNum() {}
+void Ladder::changeLadderLen() {}
+
+void Ladder::shuffleLadder()
+{
+    srand(time(0));
+
+    for (int i = 0; i < ladderLen; i++)
+        bridgeList[i] = rand() % (entryNum - 1);
+
+    for (int i = 0; i < entryNum; i++)
+        targetList[i] = false;
+
+    int cnt = 0;
+    while (cnt < targetNum)
+    {
+        int curTarget = rand() % entryNum;
+        if (!targetList[curTarget])
+        {
+            targetList[curTarget] = true;
+            cnt++;
+        }
+    }
+
+    status = "shuffle ladder complete";
+}
+
+void Ladder::rideLadder() {}
+void Ladder::showResult() {}
+
+void Ladder::terminate()
+{
+    status = "goodbye";
+}
+
+void Ladder::invalidCommand()
+{
+    status = "invalid command";
+}
+
+void Ladder::setDefaultCommand()
+{
+    command = "what command do you want to execute?";
 }

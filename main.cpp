@@ -2,8 +2,9 @@
 
 int main()
 {
-    system("clear");
     Ladder ladder = Ladder();
+
+    ladder.printLadder();
 
     char command;
     do
@@ -11,8 +12,6 @@ int main()
         cin >> command;
         switch (command)
         {
-        case '0':
-            break;
         case '1':
             ladder.addEntry();
             break;
@@ -34,10 +33,14 @@ int main()
         case '7':
             ladder.showResult();
             break;
+        case '0':
+            ladder.terminate();
+            break;
         default:
             ladder.invalidCommand();
             break;
         }
+        ladder.printLadder();
     } while (command != '0');
 
     return 0;
