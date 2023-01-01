@@ -3,6 +3,7 @@ using namespace std;
 
 #define MAX_ENTRY 10
 #define MAX_LENGTH 20
+#define DELAY 100000
 
 class Ladder
 {
@@ -25,10 +26,10 @@ public:
     void changeEntry();
     void changeLoserNum();
     void changeLadderLen();
-    void drawLadderMap();
+    void initLadderMap();
     void shuffleLadder();
     void rideLadder();
-    bool rideLadder(int index);
+    bool rideLadder(int index, bool trace);
     void showResult();
     void terminate();
     void invalidCommand();

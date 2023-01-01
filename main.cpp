@@ -3,37 +3,38 @@
 int main()
 {
     Ladder ladder = Ladder();
-
     ladder.printLadder();
 
-    char command;
+    int command;
     do
     {
         cin >> command;
+
+        ladder.initLadderMap();
         switch (command)
         {
-        case '1':
+        case 1:
             ladder.addEntry();
             break;
-        case '2':
+        case 2:
             ladder.changeEntry();
             break;
-        case '3':
+        case 3:
             ladder.changeLoserNum();
             break;
-        case '4':
+        case 4:
             ladder.changeLadderLen();
             break;
-        case '5':
+        case 5:
             ladder.shuffleLadder();
             break;
-        case '6':
+        case 6:
             ladder.rideLadder();
             break;
-        case '7':
+        case 7:
             ladder.showResult();
             break;
-        case '0':
+        case 0:
             ladder.terminate();
             break;
         default:
@@ -41,7 +42,7 @@ int main()
             break;
         }
         ladder.printLadder();
-    } while (command != '0');
+    } while (command != 0);
 
     return 0;
 }

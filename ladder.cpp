@@ -1,4 +1,6 @@
 #include <iostream>
+#include <unistd.h>
+#include <cassert>
 #include "ladder.h"
 using namespace std;
 
@@ -105,6 +107,7 @@ void Ladder::changeEntry()
     entryList[index] = name;
 
     status = "change entry complete";
+    initLadderMap();
     setDefaultCommand();
 }
 
@@ -156,7 +159,7 @@ void Ladder::changeLadderLen()
     setDefaultCommand();
 }
 
-void Ladder::drawLadderMap()
+void Ladder::initLadderMap()
 {
     for (int i = 0; i <= ladderLen + 1; i++)
     {
@@ -165,7 +168,7 @@ void Ladder::drawLadderMap()
         for (int j = 1; j < entryNum; j++)
         {
             char curChar = (bridgeList[i] == j) ? '-' : ' ';
-            ladderMap[i][j] = string((entryList[j].length() + 1) / 2, curChar);
+            ladderMap[i][j] = string((entryList[j - 1].length() + 1) / 2, curChar);
             ladderMap[i][j] += string(entryList[j].length() / 2, curChar) + "|";
         }
     }
@@ -194,7 +197,7 @@ void Ladder::shuffleLadder()
         }
     }
 
-    drawLadderMap();
+    initLadderMap();
     status = "shuffle ladder complete";
 }
 
@@ -215,9 +218,9 @@ void Ladder::rideLadder()
     }
 
     // else
-    bool result = rideLadder(index);
+    bool result = rideLadder(index, true);
 
-    status += entryList[index] + " is ";
+    status = entryList[index] + " is ";
     if (result)
         status += "loser";
     else
@@ -226,19 +229,68 @@ void Ladder::rideLadder()
     setDefaultCommand();
 }
 
-bool Ladder::rideLadder(int index)
+bool Ladder::rideLadder(int index, bool trace)
 {
     int curBridge = index;
+    string curFrag;
+    size_t pos;
 
     for (int i = 0; i <= ladderLen + 1; i++)
     {
+        if (trace)
+        {
+            curFrag = ladderMap[i][curBridge];
+
+            pos = curFrag.find('|');
+            assert(pos != string::npos);
+
+            curFrag = curFrag.replace(pos, 1, "*");
+            ladderMap[i][curBridge] = curFrag;
+            printLadder();
+            usleep(DELAY);
+        }
+
         if (bridgeList[i] == curBridge)
         {
+            if (trace)
+            {
+                curFrag = ladderMap[i][curBridge];
+
+                while ((pos = curFrag.rfind('-')) != string::npos)
+                {
+                    curFrag = curFrag.replace(pos, 1, "*");
+                    ladderMap[i][curBridge] = curFrag;
+                    printLadder();
+                    usleep(DELAY);
+                }
+            }
             curBridge -= 1;
         }
         else if (bridgeList[i] == curBridge + 1)
         {
+            if (trace)
+            {
+                curFrag = ladderMap[i][curBridge + 1];
+                while ((pos = curFrag.find('-')) != string::npos)
+                {
+                    curFrag = curFrag.replace(pos, 1, "*");
+                    ladderMap[i][curBridge + 1] = curFrag;
+                    printLadder();
+                    usleep(DELAY);
+                }
+            }
             curBridge += 1;
+        }
+
+        if (trace)
+        {
+            curFrag = ladderMap[i][curBridge];
+
+            if ((pos = curFrag.find('|')) != string::npos)
+                curFrag = curFrag.replace(pos, 1, "*");
+            ladderMap[i][curBridge] = curFrag;
+            printLadder();
+            usleep(DELAY);
         }
     }
 
@@ -250,7 +302,7 @@ void Ladder::showResult()
     status = (loserNum > 1) ? "losers are " : "loser is ";
 
     for (int i = 0; i < entryNum; i++)
-        if (rideLadder(i))
+        if (rideLadder(i, false))
             status += entryList[i] + ", ";
 
     status = status.substr(0, status.rfind(','));
